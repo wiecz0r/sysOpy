@@ -49,7 +49,7 @@ void addBlock(BlockArray * array, char *block, int index){
 }
 
 void deleteBlock(BlockArray * array, int index){
-    if (array == NULL) return;
+    if (array == NULL || array->array == NULL || array->array[index] == NULL) return;
     if (!array->dynamic)
         array->array[index] = NULL;
     else {

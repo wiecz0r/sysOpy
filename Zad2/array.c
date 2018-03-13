@@ -1,6 +1,6 @@
 #include "array.h"
 
-//char staticBlockArray[5000][100];
+char staticBlockArray[50000][500];
 
 BlockArray * createArray(size_t arraySize, size_t blockSize, int dynamic){
     BlockArray *myArray = (BlockArray *) calloc(1, sizeof(BlockArray));

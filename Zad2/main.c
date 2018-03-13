@@ -69,14 +69,14 @@ void printTime(clock_t *clocks, struct tms *tmss, char *message, FILE *f, int in
 int main(int argc, char **argv){
     srand(time(NULL));
 
-    int arrSize = atoi(argv[1]);
-    int blcSize = atoi(argv[2]);
-    int isDynamic;
-
     if (argc < 4){
         printf("at least 3 args required:\n arraySize, blockSize, s|d (static|dynamic)\n");
         exit(EXIT_FAILURE);
     }
+
+    int arrSize = atoi(argv[1]);
+    int blcSize = atoi(argv[2]);
+    int isDynamic;
 
     if (strcmp(argv[3], "s")==0) isDynamic = 1;
     else if (strcmp(argv[3], "d")==0) isDynamic = 0;
@@ -112,7 +112,11 @@ int main(int argc, char **argv){
     clocks[curr_time] = times(tmss[curr_time]);
     curr_time++;
 
-    printTime(clocks,*tmss,"CREATING TABLE", file, 0);
+    //printTime(clocks,tmss,"CREATING TABLE", file, 0);
+    printf("%lf\n",tDiff(clocks[0],clocks[1]));
+    printf("%lf\n",tDiff(tmss[0]->tms_stime,tmss[1]->tms_stime));
+        printf("%lf\n",tDiff(tmss[0]->tms_utime,tmss[1]->tms_utime));
+
 
 
 

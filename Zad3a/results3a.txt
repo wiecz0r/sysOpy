@@ -1,0 +1,288 @@
+Program name: ./main_static
+Array size: 2000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.000000  User: 1.890000  System: 0.100000
+
+DELETE AND ADD
+Real: 0.310000  User: 0.300000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.280000  User: 0.270000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 2000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.620000  User: 1.590000  System: 0.030000
+
+DELETE AND ADD
+Real: 0.250000  User: 0.240000  System: 0.000000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.260000  User: 0.250000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 4000  Block size: 50  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.480000  User: 2.340000  System: 0.120000
+
+DELETE AND ADD
+Real: 0.200000  User: 0.200000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.170000  User: 0.170000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 4000  Block size: 50  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.030000  User: 1.980000  System: 0.030000
+
+DELETE AND ADD
+Real: 0.160000  User: 0.160000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.150000  User: 0.140000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 3000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.980000  User: 2.820000  System: 0.150000
+
+FIND BY ASCII
+Real: 0.740000  User: 0.730000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.190000  User: 0.190000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 3000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.510000  User: 2.450000  System: 0.050000
+
+FIND BY ASCII
+Real: 0.730000  User: 0.720000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.160000  User: 0.160000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 1000  Block size: 200  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.250000  User: 1.080000  System: 0.130000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.660000  User: 0.640000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.240000  User: 0.230000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_static
+Array size: 1000  Block size: 200  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 0.850000  User: 0.820000  System: 0.020000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.600000  User: 0.580000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.250000  User: 0.250000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 2000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.970000  User: 1.860000  System: 0.110000
+
+DELETE AND ADD
+Real: 0.300000  User: 0.280000  System: 0.000000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.270000  User: 0.270000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 2000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.650000  User: 1.610000  System: 0.030000
+
+DELETE AND ADD
+Real: 0.250000  User: 0.250000  System: 0.000000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.250000  User: 0.250000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 4000  Block size: 50  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.470000  User: 2.330000  System: 0.120000
+
+DELETE AND ADD
+Real: 0.210000  User: 0.210000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.190000  User: 0.180000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 4000  Block size: 50  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.990000  User: 1.950000  System: 0.030000
+
+DELETE AND ADD
+Real: 0.150000  User: 0.150000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.160000  User: 0.150000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 3000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.910000  User: 2.750000  System: 0.150000
+
+FIND BY ASCII
+Real: 0.690000  User: 0.690000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.200000  User: 0.190000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 3000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.430000  User: 2.380000  System: 0.040000
+
+FIND BY ASCII
+Real: 0.710000  User: 0.710000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.170000  User: 0.160000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 1000  Block size: 200  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.080000  User: 0.990000  System: 0.080000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.660000  User: 0.650000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.230000  User: 0.230000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_shared
+Array size: 1000  Block size: 200  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 0.840000  User: 0.820000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.600000  User: 0.590000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.240000  User: 0.240000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 2000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.020000  User: 1.910000  System: 0.100000
+
+DELETE AND ADD
+Real: 0.330000  User: 0.320000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.280000  User: 0.270000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 2000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.650000  User: 1.610000  System: 0.030000
+
+DELETE AND ADD
+Real: 0.270000  User: 0.260000  System: 0.000000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.250000  User: 0.240000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 4000  Block size: 50  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.500000  User: 2.370000  System: 0.120000
+
+DELETE AND ADD
+Real: 0.210000  User: 0.200000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.190000  User: 0.190000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 4000  Block size: 50  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.950000  User: 1.910000  System: 0.040000
+
+DELETE AND ADD
+Real: 0.180000  User: 0.170000  System: 0.000000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.150000  User: 0.150000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 3000  Block size: 100  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.950000  User: 2.800000  System: 0.150000
+
+FIND BY ASCII
+Real: 0.700000  User: 0.690000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.210000  User: 0.210000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 3000  Block size: 100  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 2.460000  User: 2.400000  System: 0.040000
+
+FIND BY ASCII
+Real: 0.680000  User: 0.680000  System: 0.000000
+
+DELETE AND ADD
+Real: 0.170000  User: 0.170000  System: 0.010000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 1000  Block size: 200  Allocation: dynamic  No of repeats:  1000
+
+CREATING TABLE
+Real: 1.040000  User: 0.950000  System: 0.080000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.670000  User: 0.660000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.250000  User: 0.240000  System: 0.000000
+---------------------------------------------------------------
+Program name: ./main_dynamic
+Array size: 1000  Block size: 200  Allocation: static  No of repeats:  1000
+
+CREATING TABLE
+Real: 0.840000  User: 0.820000  System: 0.010000
+
+DELETE AND ADD SEQUENTLY
+Real: 0.590000  User: 0.580000  System: 0.010000
+
+FIND BY ASCII
+Real: 0.220000  User: 0.220000  System: 0.000000
+---------------------------------------------------------------

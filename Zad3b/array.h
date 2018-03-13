@@ -13,7 +13,7 @@ typedef struct BlockArray{
     int dynamic;
 } BlockArray;
 
-char staticBlockArray[50000][500];
+extern char staticBlockArray[50000][500];
 
 BlockArray * createArray(size_t arraySize, size_t blockSize, int dynamic);
 void deleteArray(BlockArray * array);
@@ -22,6 +22,8 @@ void deleteBlock(BlockArray * array, int index);
 int getASCIIvalue (char *block);
 char * closestBlock (BlockArray * bArr, int value);
 void printArray(BlockArray * myArr);
+char *randomString(size_t maxBlockSize);
+
 
 
 #endif

@@ -1,28 +1,109 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "array.h"
 #include <time.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <string.h>
 
 #define TIME_COUNT 6
 #define REPEAT 1000
-#define FILENAME "./raport2.txt"
+#define FILENAME "./results3b.txt"
 
 #ifndef DLL
-void fillBlockArray(BlockArray * bArray);
-void deleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex);
-void seqDeleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex);
-double tDiff(clock_t end, clock_t start);
-void printTime(clock_t start, clock_t end, struct tms tms_start, struct tms tms_end, FILE *f, char *message);
+#include "array.h"
 #endif
 
+#ifdef DLL
+typedef struct BlockArray{
+    char ** array;
+    size_t size;
+    size_t blockSize;
+    int dynamic;
+} BlockArray;
+
+char staticBlockArray[50000][500];
+#endif
+
+void fillBlockArray(BlockArray * bArray){
+    #ifdef DLL
+    void *lib = dlopen("./libarray.so",RTLD_LAZY);
+    void (*addBlock)(BlockArray*, char*, int) = dlsym(lib,"addBlock");
+    char* (*randomString)(size_t) = dlsym(lib,"randomString");
+    #endif
+    for (int i=0; i<bArray->size; i++)
+        addBlock(bArray,randomString(bArray->blockSize),i);
+}
+
+void deleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
+    #ifdef DLL
+    void *lib = dlopen("./libarray.so",RTLD_LAZY);
+    void (*addBlock)(BlockArray*, char*, int) = dlsym(lib,"addBlock");
+    void (*deleteBlock)(BlockArray*, int) = dlsym(lib,"deleteBlock");
+    char* (*randomString)(size_t) = dlsym(lib,"randomString");
+    #endif
+    int index = startIndex;
+    for (int i=0; i < blocksNo && index < myarr->size; i++){
+        deleteBlock(myarr,index);
+        index++;
+    }
+    char *block;
+    for (int i=0; i < blocksNo && startIndex < myarr->size; i++){
+        block = randomString(myarr->blockSize);
+        addBlock(myarr,block,startIndex);
+        startIndex++;
+    }
+    free(block);
+}
+
+void seqDeleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
+    #ifdef DLL
+    void *lib = dlopen("./libarray.so",RTLD_LAZY);
+    void (*addBlock)(BlockArray*, char*, int) = dlsym(lib,"addBlock");
+    void (*deleteBlock)(BlockArray*, int) = dlsym(lib,"deleteBlock");
+    char* (*randomString)(size_t) = dlsym(lib,"randomString");
+    #endif
+    char *block;
+    for (int i=0; i < blocksNo && startIndex < myarr->size; i++){
+        deleteBlock(myarr,startIndex);
+        block = randomString(myarr->blockSize);
+        addBlock(myarr,block,startIndex);
+        startIndex++;
+    }
+}
+
+double tDiff(clock_t end, clock_t start){
+    return (double)(end-start) / sysconf(_SC_CLK_TCK);
+}
+
+void printTime(clock_t start, clock_t end, struct tms tms_start, struct tms tms_end, FILE *f, char *message){
+    printf("\n%s\n",message);
+    printf("Real: %lf  ", tDiff(end,start));
+    printf("User: %lf  ", tDiff(tms_end.tms_utime,tms_start.tms_utime));
+    printf("System: %lf\n", tDiff(tms_end.tms_stime,tms_start.tms_stime));
+
+    fprintf(f,"\n%s\n",message);
+    fprintf(f,"Real: %lf  ", tDiff(end,start));
+    fprintf(f,"User: %lf  ", tDiff(tms_end.tms_utime,tms_start.tms_utime));
+    fprintf(f,"System: %lf\n", tDiff(tms_end.tms_stime,tms_start.tms_stime));
+}
+
 int main(int argc, char **argv){
+    #ifdef DLL
+    void *lib = dlopen("./libarray.so",RTLD_LAZY);
+    if(!lib){
+        printf("Problem with library!");
+        return 1;
+    }
+    BlockArray* (*createArray)(size_t, size_t, int) = dlsym(lib,"createArray");
+    char* (*closestBlock) (BlockArray*, int) = dlsym(lib,"closestBlock");
+    void (*deleteArray)(BlockArray *) = dlsym(lib,"deleteArray");
+    #endif
     srand(time(NULL));
 
     if (argc < 4){
         printf("at least 3 args required:\n arraySize, blockSize, static|dynamic\n");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     int arrSize = atoi(argv[1]);
@@ -116,56 +197,6 @@ int main(int argc, char **argv){
     }
     fprintf(file,"---------------------------------------------------------------\n");
     fclose(file);
-
     deleteArray(blockArray);
-
     return 0;
-}
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-///////////////////////////////////////////////////////////////////////
-void fillBlockArray(BlockArray * bArray){
-    for (int i=0; i<bArray->size; i++)
-        addBlock(bArray,randomString(bArray->blockSize),i);
-}
-
-void deleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
-    int index = startIndex;
-    for (int i=0; i < blocksNo && index < myarr->size; i++){
-        deleteBlock(myarr,index);
-        index++;
-    }
-    char *block;
-    for (int i=0; i < blocksNo && startIndex < myarr->size; i++){
-        block = randomString(myarr->blockSize);
-        addBlock(myarr,block,startIndex);
-        startIndex++;
-    }
-    free(block);
-}
-
-void seqDeleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
-    char *block;
-    for (int i=0; i < blocksNo && startIndex < myarr->size; i++){
-        deleteBlock(myarr,startIndex);
-        block = randomString(myarr->blockSize);
-        addBlock(myarr,block,startIndex);
-        startIndex++;
-    }
-}
-
-double tDiff(clock_t end, clock_t start){
-    return (double)(end-start) / sysconf(_SC_CLK_TCK);
-}
-//do zmiany!!!!!!!!!!
-void printTime(clock_t start, clock_t end, struct tms tms_start, struct tms tms_end, FILE *f, char *message){
-    printf("\n%s\n",message);
-    printf("Real: %lf  ", tDiff(end,start));
-    printf("User: %lf  ", tDiff(tms_end.tms_utime,tms_start.tms_utime));
-    printf("System: %lf\n", tDiff(tms_end.tms_stime,tms_start.tms_stime));
-
-    fprintf(f,"\n%s\n",message);
-    fprintf(f,"Real: %lf  ", tDiff(end,start));
-    fprintf(f,"User: %lf  ", tDiff(tms_end.tms_utime,tms_start.tms_utime));
-    fprintf(f,"System: %lf\n", tDiff(tms_end.tms_stime,tms_start.tms_stime));
 }

@@ -1,6 +1,6 @@
 #include "array.h"
 
-char staticBlockArray[1000][200];
+char staticBlockArray[50000][500];
 
 BlockArray * createArray(size_t arraySize, size_t blockSize, int dynamic){
     BlockArray *myArray = (BlockArray *) calloc(1, sizeof(BlockArray));
@@ -27,7 +27,7 @@ void deleteArray(BlockArray * array){
             array->array[i]=NULL;
         }
     }
-    free(array->array);
+    //free(array->array);
     free(array);
 }
 
@@ -91,4 +91,16 @@ void printArray(BlockArray * myArr){
         if(myArr->array[i] == NULL) continue;
         printf("%s  %d \n", myArr->array[i], i);
     }
+}
+
+char *randomString(size_t maxBlockSize){
+    if (maxBlockSize<1) return NULL;
+    char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,/?!@#$^&*()_+";
+    int outStrLen = (rand() % strlen(charset)) % maxBlockSize;
+    char *outString = (char *) malloc( (size_t) (outStrLen + 1) * sizeof(char) );
+    for (int i=0; i< outStrLen; i++){
+        outString[i] = charset[ rand() % strlen(charset) ];
+    }
+    outString[outStrLen]='\0';
+    return outString;
 }

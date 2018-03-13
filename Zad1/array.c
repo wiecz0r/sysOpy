@@ -1,6 +1,6 @@
 #include "array.h"
 
-char staticBlockArray[1000][200];
+char staticBlockArray[50000][500];
 
 BlockArray * createArray(size_t arraySize, size_t blockSize, int dynamic){
     BlockArray *myArray = (BlockArray *) calloc(1, sizeof(BlockArray));
@@ -27,7 +27,7 @@ void deleteArray(BlockArray * array){
             array->array[i]=NULL;
         }
     }
-    free(array->array);
+    //free(array->array);
     free(array);
 }
 

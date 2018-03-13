@@ -14,3 +14,6 @@ shared:
 
 clean:
 	rm -f *.o
+
+fresh: clean
+	rm -f *.a *.so

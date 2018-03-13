@@ -13,7 +13,7 @@ typedef struct BlockArray{
     int dynamic;
 } BlockArray;
 
-char staticBlockArray[4000][400];
+char staticBlockArray[5000][100];
 
 BlockArray * createArray(size_t arraySize, size_t blockSize, int dynamic);
 void deleteArray(BlockArray * array);

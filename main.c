@@ -17,11 +17,6 @@ char *randomString(size_t maxBlockSize){
     return outString;
 }
 
-void fillBlockArray(BlockArray * bArray){
-    for (int i=0; i<bArray->size; i++)
-        addBlock(bArray,randomString(bArray->blockSize),i);
-}
-
 void deleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
     int index = startIndex;
     for (int i=0; i < blocksNo && index < myarr->size; i++){
@@ -34,6 +29,7 @@ void deleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
         addBlock(myarr,block,startIndex);
         startIndex++;
     }
+    free(block);
 }
 
 void seqDeleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
@@ -49,7 +45,7 @@ void seqDeleteAndAdd(BlockArray * myarr, int blocksNo, int startIndex){
 
 
 
-int main(){
+int main(int argc, char **argv){
     srand(time(NULL));
     char *random = randomString(10);
     

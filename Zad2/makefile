@@ -16,6 +16,11 @@ shared:
 clean:
 	rm -f *.o
 
+fresh:
+	make clean
+	make clean_file
+	rm -f *.a *.so main
+
 trivial:
 	$(GCC) main.c array.c -o main
 	make clean

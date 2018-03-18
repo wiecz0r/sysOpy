@@ -12,8 +12,8 @@ static:
 shared:
 	$(GCC) -fPIC -c array.c
 	$(GCC) -fPIC -shared array.o -o libarray.so
-	#$(GCC) main.c -L. -Wl,-rpath=. -larray -o $(M_PATH)_shared
-	$(GCC) main.c -L. -larray -o $(M_PATH)_shared
+	$(GCC) main.c -L. -Wl,-rpath=. -larray -o $(M_PATH)_shared
+	#$(GCC) main.c -L. -larray -o $(M_PATH)_shared
 	make clean
 
 dynamic:

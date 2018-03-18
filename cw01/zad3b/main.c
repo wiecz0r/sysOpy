@@ -192,9 +192,6 @@ int main(int argc, char **argv){
     }
     free(message);
 
-    for (int i=0; i<TIME_COUNT;i++){
-        free(tmss[i]);
-    }
     fprintf(file,"---------------------------------------------------------------\n");
     fclose(file);
     deleteArray(blockArray);

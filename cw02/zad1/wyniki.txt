@@ -1,0 +1,80 @@
+
+Kopiowanie SYS   Records count: 500000   Record size in bytes: 4
+User:    0.47
+System:  3.11
+-----------------------------------------------------------------------
+
+Kopiowanie LIB   Records count: 500000   Record size in bytes: 4
+User:    0.06
+System:  0.00
+-----------------------------------------------------------------------
+
+Sortowanie SYS   Records count: 4000   Record size in bytes: 4
+User:   10.45
+System: 34.72
+-----------------------------------------------------------------------
+
+Sortowanie LIB   Records count: 4000   Record size in bytes: 4
+User:   16.67
+System: 55.56
+-----------------------------------------------------------------------
+
+Kopiowanie SYS   Records count: 200000   Record size in bytes: 4
+User:    0.18
+System:  1.21
+-----------------------------------------------------------------------
+
+Kopiowanie LIB   Records count: 200000   Record size in bytes: 4
+User:    0.02
+System:  0.00
+-----------------------------------------------------------------------
+
+Sortowanie SYS   Records count: 3000   Record size in bytes: 4
+User:    5.94
+System: 19.83
+-----------------------------------------------------------------------
+
+Sortowanie LIB   Records count: 3000   Record size in bytes: 4
+User:    9.50
+System: 31.55
+-----------------------------------------------------------------------
+
+Kopiowanie SYS   Records count: 300000   Record size in bytes: 512
+User:    0.28
+System:  2.20
+-----------------------------------------------------------------------
+
+Kopiowanie LIB   Records count: 300000   Record size in bytes: 512
+User:    0.06
+System:  0.13
+-----------------------------------------------------------------------
+
+Sortowanie SYS   Records count: 4000   Record size in bytes: 512
+User:   10.28
+System: 35.65
+-----------------------------------------------------------------------
+
+Sortowanie LIB   Records count: 4000   Record size in bytes: 512
+User:   16.55
+System: 55.35
+-----------------------------------------------------------------------
+
+Kopiowanie SYS   Records count: 200000   Record size in bytes: 512
+User:    0.19
+System:  1.47
+-----------------------------------------------------------------------
+
+Kopiowanie LIB   Records count: 200000   Record size in bytes: 512
+User:    0.04
+System:  0.08
+-----------------------------------------------------------------------
+
+Sortowanie SYS   Records count: 3000   Record size in bytes: 512
+User:    5.98
+System: 20.67
+-----------------------------------------------------------------------
+
+Sortowanie LIB   Records count: 3000   Record size in bytes: 512
+User:    9.70
+System: 32.19
+-----------------------------------------------------------------------

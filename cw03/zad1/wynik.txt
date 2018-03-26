@@ -1,0 +1,49 @@
+CHILD_PROCESS
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad1/makefile
+File Size:            244 B
+File permissions:     rw-r--r--
+Last modification:    21-03-2018 02:00:17
+
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad1/normal_dir.c
+File Size:            4521 B
+File permissions:     rw-r--r--
+Last modification:    21-03-2018 10:30:57
+
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad1/wynik.txt
+File Size:            0 B
+File permissions:     rw-rw-r--
+Last modification:    21-03-2018 11:04:00
+
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad1/program
+File Size:            19040 B
+File permissions:     rwxrwxr-x
+Last modification:    21-03-2018 11:04:00
+
+CHILD_PROCESS
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/dsdas/wynik.txt
+File Size:            843 B
+File permissions:     rw-rw-r--
+Last modification:    21-03-2018 10:27:39
+
+CHILD_PROCESS
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/dsdas/dsad/wynik.txt
+File Size:            843 B
+File permissions:     rw-rw-r--
+Last modification:    21-03-2018 10:27:39
+
+CHILD_PROCESS
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad2/main.c
+File Size:            215 B
+File permissions:     rw-rw-r--
+Last modification:    21-03-2018 10:57:48
+
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad2/text
+File Size:            14 B
+File permissions:     rw-rw-r--
+Last modification:    21-03-2018 10:52:59
+
+Absolute path:        /home/students/s/w/swieczor/WieczorekSzymon-cw02/WieczorekSzymon/cw03/zad2/main
+File Size:            8320 B
+File permissions:     rwxrwxr-x
+Last modification:    21-03-2018 10:57:50
+

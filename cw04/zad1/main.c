@@ -1,14 +1,16 @@
 #define _DEFAULT_SOURCE
+#define _POSIX_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 int paused = 0;
 int killed = 0;
-static char* cmd = "./time.sh";
+char* cmd[] = {"./time.sh",0};
 
 void SIGTSTP_handler(int signal){
     if (!paused)
@@ -23,14 +25,14 @@ void SIGINT_handler(int signal){
 
 void child(){
     pid_t pid = fork();
-    if(!pid) execvp(cmd,NULL);
+    if(!pid) execvp(cmd[0],cmd);
 
     while(1){
         if (!paused){
             if(killed){
                 killed = 0;
                 pid = fork();
-                if(!pid) execvp(cmd,NULL);
+                if(!pid) execvp(cmd[0],cmd);
             }
         }
         else if (!killed){

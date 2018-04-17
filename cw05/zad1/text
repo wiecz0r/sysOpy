@@ -1,0 +1,6 @@
+ps -al | wc -l
+echo alamakota | wc -m
+ps aux | grep bash | grep grep
+echo alamakota | wc -l
+ps aux | grep root | head -n 10
+ps aux | grep root | head -n 10 | wc -l

@@ -6,52 +6,71 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include "sV.h"
 
+#include <errno.h>
+
 int end = 0;
-int clients[MAX_CLIENTS];
+int clients_q[MAX_CLIENTS];
+int clients_PID[MAX_CLIENTS];
+
 int id = 0;
 int server_q;
 
 void init(msg_buf*);
 void mirror(msg_buf*);
 void timef(msg_buf*);
+void calcf(msg_buf*);
 
-void delete_server_queue(){
+void delete_server_queue(void){
     msgctl(server_q, IPC_RMID,NULL);
     printf("Deleted server queue\n");
 }
 
-int main(){
+void int_handler(int signo){
+    printf("\nReceived SIGINT, terminating SERVER process...\n");
+    exit(SIGINT);
+}
+
+int main(void){
     atexit(delete_server_queue);
+    signal(SIGINT,int_handler);
+
     
-    key_t queue_key = ftok(getenv("HOME"),0);
+    key_t queue_key = ftok(getenv("HOME"),PROJECT_ID);
     if (queue_key == -1){
         printf("Error while generating queue key!\n");
         exit(EXIT_FAILURE);
     }
-    server_q = msgget(queue_key, IPC_CREAT | IPC_EXCL);
+    server_q = msgget(queue_key, IPC_CREAT | 0666);
     if (server_q == -1){
         printf("Error while making server queue!\n");
         exit(EXIT_FAILURE);
     }
+    printf("Server key: %d\nServer queue: %d\n",queue_key,server_q);
 
     msg_buf msg;
     struct msqid_ds stat;
-
     while(1){
-        if(end){
-            if (msgctl(server_q,IPC_STAT,&stat) == -1){
-                printf("Error when getting current state of server queue\n");
-                exit(EXIT_FAILURE);
-            }
-            if (stat.msg_qnum == 0) break;
-        }
-        if (msgrcv(server_q,&msg,MSG_SIZE,0,0) < 0){
-            printf("Error when receiving msg from client!\n");
+        if (msgctl(server_q,IPC_STAT,&stat) == -1){
+            perror(NULL);
+            printf("Error when getting current state of server queue\n");
             exit(EXIT_FAILURE);
         }
+        if (end && stat.msg_qnum == 0) exit(EXIT_SUCCESS);
+        if (stat.msg_qnum == 0){
+            printf("No messages in SERVER queue\n");
+            sleep(2);
+            continue;
+        }
+        if (msgrcv(server_q,&msg,MSG_SIZE,0,0) < 0){
+            printf("Receiving message from SERVER queue failed!\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("Received message!\n Type: %ld\n Text: %s\n",msg.msg_type, msg.msg_text);
         switch(msg.msg_type){
             case INIT:
                 init(&msg);
@@ -60,7 +79,7 @@ int main(){
                 mirror(&msg);
                 break;
             case CALC:
-                //calcf(&msg);
+                calcf(&msg);
                 break;
             case TIME:
                 timef(&msg);
@@ -70,28 +89,39 @@ int main(){
                 break;
             default:
                 printf("Error! Received unknown msg!\n");
-                exit(EXIT_FAILURE);
+                break;
         }
     }
     return 0;
 }
 
 void init(msg_buf *msg){
+    msg->msg_type=msg->client_PID;
     msg->client_id = id;
+
+    if (id==MAX_CLIENTS-1){
+        sprintf(msg->msg_text,"Can't add new client");
+        return;   
+    }
+   
     key_t client_queue_key =(key_t)strtol(msg->msg_text,NULL,10);
     int client_queue_id = msgget(client_queue_key,0);
-    clients[id] = client_queue_id;
+
+    clients_q[id] = client_queue_id;
+    clients_PID[id] = msg->client_PID;
+
     sprintf(msg->msg_text, "%d", id);
+    id++;
     if(msgsnd(client_queue_id,msg,MSG_SIZE,0)==-1){
         printf("Error when trying to respond from INIT func!\n");
         exit(EXIT_FAILURE);
     }
-    id++;
 
 }
 
 void mirror(msg_buf *msg){
-    int client_q = clients[msg->client_id];
+    int client_q = clients_q[msg->client_id];
+    msg->msg_type=msg->client_PID;
 
     int length = (int)strlen(msg->msg_text);
     char tmp;
@@ -109,11 +139,30 @@ void mirror(msg_buf *msg){
 }
 
 void timef(msg_buf *msg){
-    int client_q = clients[msg->client_id];
-    time_t actualtime = time(NULL);
-    strcpy(msg->msg_text,ctime(&actualtime));
+    int client_q = clients_q[msg->client_id];
+    msg->msg_type=msg->client_PID;
+    
+    FILE *date = popen("date","r");
+    fgets(msg->msg_text,MAX_MSG_TXT,date);
+    pclose(date);
+
     if(msgsnd(client_q,msg,MSG_SIZE,0)==-1){
         printf("Error when trying to respond from TIME func!\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void calcf(msg_buf *msg){
+    int client_q = clients_q[msg->client_id];
+
+    char buff[128];
+    sprintf(buff,"echo '%s' | bc",msg->msg_text);
+    FILE * run = popen(buff,"r");
+    fgets(msg->msg_text,MAX_MSG_TXT,run);
+    pclose(run);
+
+    if(msgsnd(client_q,msg,MSG_SIZE,0)==-1){
+        printf("Error when trying to respond from CALC func!\n");
         exit(EXIT_FAILURE);
     }
 }

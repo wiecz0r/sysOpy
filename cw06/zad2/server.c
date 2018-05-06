@@ -25,8 +25,14 @@ void timef(msg_buf*);
 void calcf(msg_buf*);
 
 void delete_server_queue(void){
-    msgctl(server_q, IPC_RMID,NULL);
-    printf("Deleted server queue\n");
+    for (int i=0; i<id;i++){
+        if(mq_close(clients_q[id])==-1) printf("Error when closing queue ID: %d\n",i);
+        if(kill(clients_PID[i],SIGINT)==-1) printf("Error when trying to kill client! PID: %d\n",clients_PID[i]);
+    }
+    if(mq_close(server_q)==-1) printf ("Error when closing server queue\n");
+    else printf("Closed server queue\n");
+    if(mq_unlink("/server")==-1) printf("Error when deleting server queue\n");
+    else printf("Deleted server queue!\n");
 }
 
 void int_handler(int signo){
@@ -48,7 +54,7 @@ int main(void){
         printf("Error while making server queue!\n");
         exit(EXIT_FAILURE);
     }
-    printf("Server key: %d\nServer queue: %d\n",queue_key,server_q);
+    printf("Server queue: %d\n",server_q);
 
     msg_buf msg;
     struct mq_attr stat;
@@ -64,7 +70,7 @@ int main(void){
             sleep(2);
             continue;
         }
-        if (mq_receive(server_q,(char *) msg, MSG_SIZE, NULL) < 0){
+        if (mq_receive(server_q,(char*) &msg, MSG_SIZE, NULL) < 0){
             printf("Receiving message from SERVER queue failed!\n");
             exit(EXIT_FAILURE);
         }
@@ -101,7 +107,7 @@ void init(msg_buf *msg){
         return;   
     }
    
-    char path;
+    char path[64];
     sprintf(path,"/%d",msg->client_PID);
     int client_queue_id = mq_open(path,O_WRONLY);
 
@@ -153,7 +159,7 @@ void timef(msg_buf *msg){
 void calcf(msg_buf *msg){
     int client_q = clients_q[msg->client_id];
 
-    char buff[128];
+    char buff[512];
     sprintf(buff,"echo '%s' | bc",msg->msg_text);
     FILE * run = popen(buff,"r");
     fgets(msg->msg_text,MAX_MSG_TXT,run);

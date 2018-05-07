@@ -48,6 +48,7 @@ int main(void){
     while(1){
         printf("\nWrite command: \n");
         fgets(command,64,stdin);
+        if(strlen(command)==1) continue;
         char *type = strtok(command," \n");
         char *arg = NULL;
         char text[100];

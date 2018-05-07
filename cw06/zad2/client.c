@@ -98,7 +98,7 @@ void generate_and_open_queues(void){
     state.mq_maxmsg = 10;
     state.mq_msgsize = MSG_SIZE;
 
-    server_q = mq_open("/server", O_WRONLY);
+    server_q = mq_open(SRV_PATH, O_WRONLY);
     if (server_q == -1){
         printf("SERVER not working. Can't open server queue.\n");
         exit(EXIT_FAILURE);

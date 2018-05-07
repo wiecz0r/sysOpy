@@ -12,6 +12,7 @@
 #define MAX_CLIENTS 10
 
 #define PROJECT_ID 12
+#define SRV_PATH "/server"
 
 typedef struct msg_buf 
 {

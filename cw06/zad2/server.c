@@ -31,7 +31,7 @@ void delete_server_queue(void){
     }
     if(mq_close(server_q)==-1) printf ("Error when closing server queue\n");
     else printf("Closed server queue\n");
-    if(mq_unlink("/server")==-1) printf("Error when deleting server queue\n");
+    if(mq_unlink(SRV_PATH)==-1) printf("Error when deleting server queue\n");
     else printf("Deleted server queue!\n");
 }
 
@@ -49,12 +49,12 @@ int main(void){
     state.mq_msgsize = MSG_SIZE;
 
     
-    server_q = mq_open("/server", O_RDONLY | O_CREAT | O_EXCL, 0666, &state);
+    server_q = mq_open(SRV_PATH, O_RDONLY | O_CREAT | O_EXCL, 0666, &state);
     if (server_q == -1){
         printf("Error while making server queue!\n");
         exit(EXIT_FAILURE);
     }
-    printf("Server queue: %s\n","/server");
+    printf("Server queue: %s\n",SRV_PATH);
 
     msg_buf msg;
     struct mq_attr stat;

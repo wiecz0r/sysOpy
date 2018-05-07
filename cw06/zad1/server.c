@@ -62,8 +62,6 @@ int main(void){
         }
         if (end && stat.msg_qnum == 0) exit(EXIT_SUCCESS);
         if (stat.msg_qnum == 0){
-            printf("No messages in SERVER queue\n");
-            sleep(2);
             continue;
         }
         if (msgrcv(server_q,&msg,MSG_SIZE,0,0) < 0){
@@ -98,14 +96,18 @@ int main(void){
 void init(msg_buf *msg){
     msg->msg_type=msg->client_PID;
     msg->client_id = id;
-
-    if (id==MAX_CLIENTS-1){
-        sprintf(msg->msg_text,"Can't add new client");
-        return;   
-    }
    
     key_t client_queue_key =(key_t)strtol(msg->msg_text,NULL,10);
     int client_queue_id = msgget(client_queue_key,0);
+    if (id==MAX_CLIENTS-1){
+        msg->msg_type=TMC;
+        if(msgsnd(client_queue_id,msg,MSG_SIZE,0)==-1){
+            printf("Error when trying to respond from INIT func!\n");
+            exit(EXIT_FAILURE);
+        }
+        end=1;
+        return; 
+    }
 
     clients_q[id] = client_queue_id;
     clients_PID[id] = msg->client_PID;
@@ -155,7 +157,7 @@ void timef(msg_buf *msg){
 void calcf(msg_buf *msg){
     int client_q = clients_q[msg->client_id];
 
-    char buff[128];
+    char buff[MAX_MSG_TXT+12];
     sprintf(buff,"echo '%s' | bc",msg->msg_text);
     FILE * run = popen(buff,"r");
     fgets(msg->msg_text,MAX_MSG_TXT,run);

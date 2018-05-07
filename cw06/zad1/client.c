@@ -13,7 +13,7 @@
 
 #include "sV.h"
 
-int client_q;
+int client_q = 0;
 int server_q;
 int client_id;
 
@@ -23,6 +23,7 @@ void receive_msg(msg_buf*);
 void send_msg(msg_buf*,char*);
 
 void delete_client_queue(void){
+    if (client_q == 0) return;
     if(msgctl(client_q, IPC_RMID,NULL)==-1)
         printf("Error when deleting client queue\n");
     else printf("Deleted client queue\n");
@@ -48,28 +49,36 @@ int main(void){
         printf("\nWrite command: \n");
         fgets(command,64,stdin);
         char *type = strtok(command," \n");
-        char *cmd2 = strtok(NULL," \n");
+        char *arg = NULL;
+        char text[100];
+        sprintf(text,"%s","");
+        while((arg=strtok(NULL," \n"))!=NULL){
+            strcat(text,arg);
+            strcat(text," ");
+        }
+        if (strlen(text)>=1) text[strlen(text)-1]=0;
         if (strcmp(type,"mirror")==0){
             msg.msg_type = MIRROR;
-            sprintf(msg.msg_text,"%s",cmd2);
+            sprintf(msg.msg_text,"%s",text);
             send_msg(&msg,"MIRROR");
             receive_msg(&msg);
+            printf("\n");
         }
         else if (strcmp(type,"calc")==0){
             msg.msg_type = CALC;
-            sprintf(msg.msg_text,"%s",cmd2);
+            sprintf(msg.msg_text,"%s",text);
             send_msg(&msg,"CALC");
             receive_msg(&msg);
         }
         else if (strcmp(type,"time")==0){
             msg.msg_type = TIME;
-            sprintf(msg.msg_text,"");
+            sprintf(msg.msg_text,"%s","");
             send_msg(&msg,"TIME");
             receive_msg(&msg);
         }
         else if (strcmp(type,"end")==0){
             msg.msg_type = END;
-            sprintf(msg.msg_text,"");
+            sprintf(msg.msg_text,"%s","");
             send_msg(&msg,"END");
         }
         else if (strcmp(type,"quit")==0){
@@ -91,7 +100,7 @@ key_t generate_and_open_queues(void){
 
     server_q = msgget(server_key,0);
     if (server_q == -1){
-        printf("Error when opening server queue from client\n");
+        printf("SERVER not working. Can't open server queue.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -124,8 +133,12 @@ void init_client(key_t client_key){
         printf("Error with INIT response from server\n");
         exit(EXIT_FAILURE);
     }
+    if (msg.msg_type == TMC){
+        printf("Too much clients for SERVER!\n");
+        exit(TMC);
+    }
     client_id = msg.client_id;
-    printf("Client initialised. PID: %d",getpid());
+    printf("Client %d initialised. PID: %d",msg.client_id+1,getpid());
 }
 
 void receive_msg(msg_buf *msg){
@@ -133,7 +146,7 @@ void receive_msg(msg_buf *msg){
         printf("Error when receiving message\n");
         exit(EXIT_FAILURE);
     }
-    printf("%s\n",msg->msg_text);
+    printf("%s",msg->msg_text);
 }
 
 void send_msg(msg_buf *msg,char *fname){

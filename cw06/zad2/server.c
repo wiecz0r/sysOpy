@@ -105,7 +105,7 @@ void init(msg_buf *msg){
     sprintf(path,"/%d",msg->client_PID);
     int client_queue_id = mq_open(path,O_WRONLY);
 
-    if (id==MAX_CLIENTS-1){
+    if (id==MAX_CLIENTS){
         msg->msg_type=TMC;
         if(mq_send(client_queue_id,(char *)msg,MSG_SIZE,0)==-1){
             printf("Error when trying to respond from INIT func!\n");

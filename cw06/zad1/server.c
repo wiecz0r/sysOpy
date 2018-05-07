@@ -99,7 +99,7 @@ void init(msg_buf *msg){
    
     key_t client_queue_key =(key_t)strtol(msg->msg_text,NULL,10);
     int client_queue_id = msgget(client_queue_key,0);
-    if (id==MAX_CLIENTS-1){
+    if (id==MAX_CLIENTS){
         msg->msg_type=TMC;
         if(msgsnd(client_queue_id,msg,MSG_SIZE,0)==-1){
             printf("Error when trying to respond from INIT func!\n");

@@ -17,7 +17,7 @@ int clients_q[MAX_CLIENTS];
 int clients_PID[MAX_CLIENTS];
 
 int id = 0;
-mqd_t server_q;
+int server_q;
 
 void init(msg_buf*);
 void mirror(msg_buf*);
@@ -54,7 +54,7 @@ int main(void){
         printf("Error while making server queue!\n");
         exit(EXIT_FAILURE);
     }
-    printf("Server queue: %d\n",server_q);
+    printf("Server queue: %s\n","/server");
 
     msg_buf msg;
     struct mq_attr stat;
@@ -66,8 +66,6 @@ int main(void){
         }
         if (end && stat.mq_curmsgs == 0) exit(EXIT_SUCCESS);
         if (stat.mq_curmsgs == 0){
-            printf("No messages in SERVER queue\n");
-            sleep(2);
             continue;
         }
         if (mq_receive(server_q,(char*) &msg, MSG_SIZE, NULL) < 0){
@@ -100,16 +98,22 @@ int main(void){
 }
 
 void init(msg_buf *msg){
-    msg->client_id=id;
-
-    if (id>MAX_CLIENTS-1){
-        sprintf(msg->msg_text,"Can't add new client");
-        return;   
-    }
+    msg->msg_type=msg->client_PID;
+    msg->client_id = id;
    
     char path[64];
     sprintf(path,"/%d",msg->client_PID);
     int client_queue_id = mq_open(path,O_WRONLY);
+
+    if (id==MAX_CLIENTS-1){
+        msg->msg_type=TMC;
+        if(mq_send(client_queue_id,(char *)msg,MSG_SIZE,0)==-1){
+            printf("Error when trying to respond from INIT func!\n");
+            exit(EXIT_FAILURE);
+        }
+        end=1;
+        return;
+    }
 
     clients_q[id] = client_queue_id;
     clients_PID[id] = msg->client_PID;
@@ -158,8 +162,9 @@ void timef(msg_buf *msg){
 
 void calcf(msg_buf *msg){
     int client_q = clients_q[msg->client_id];
+    msg->msg_type=msg->client_PID;
 
-    char buff[512];
+    char buff[MAX_MSG_TXT+12];
     sprintf(buff,"echo '%s' | bc",msg->msg_text);
     FILE * run = popen(buff,"r");
     fgets(msg->msg_text,MAX_MSG_TXT,run);

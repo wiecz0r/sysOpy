@@ -1,5 +1,5 @@
 all:
-	gcc -Wall server.c -o server -lrt
-	gcc -Wall client.c -o client -lrt
+	gcc -Wall server.c -o server -lrt -g
+	gcc -Wall client.c -o client -lrt -g
 clear:
 	rm -f client server

@@ -8,7 +8,7 @@
 #define END     5
 #define TMC     6
 
-#define MAX_MSG_TXT 300
+#define MAX_MSG_TXT 2048
 #define MAX_CLIENTS 10
 
 #define PROJECT_ID 12
@@ -21,6 +21,6 @@ typedef struct msg_buf
     int client_PID;
 } msg_buf;
 
-const size_t MSG_SIZE = 500;
+const size_t MSG_SIZE = sizeof(msg_buf)-sizeof(long);
 
 #endif

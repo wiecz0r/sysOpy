@@ -16,6 +16,7 @@
 
 #define QUEUE 0
 #define BARBER 1
+#define CHAIR 2
 #define PROJ_ID 1234
 
 typedef struct Fifo{

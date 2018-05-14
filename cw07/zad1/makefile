@@ -1,7 +1,7 @@
-CC = gcc -Wall -v -o
+CC = gcc -Wall
 
 all:
-	$(CC) golibroda golibroda.c
+	$(CC) functions.c golibroda.c -o golibroda
 
 clear:
 	rm golibroda

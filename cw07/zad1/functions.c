@@ -19,6 +19,7 @@ int fifo_put(Fifo* f, int element){
         return -1;
     f->el[f->in]=element;
     f->in = (f->in + 1) % f->size;
+    return 0;
 }
 
 int fifo_get(Fifo* f){

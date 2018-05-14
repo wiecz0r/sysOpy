@@ -1,6 +1,7 @@
 #ifndef _FUNC_H
 #define _FUNC_H
 
+//#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 #include <sys/shm.h>
 #include <sys/ipc.h>
@@ -23,6 +24,13 @@ typedef struct Fifo{
     int in;
     int out;
 }Fifo;
+
+union semun {
+    int              val;    /* Value for SETVAL */
+    struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+    unsigned short  *array;  /* Array for GETALL, SETALL */
+    struct seminfo  *__buf;  /* Buffer for IPC_INFO*/
+};
 
 long get_time(void);
 

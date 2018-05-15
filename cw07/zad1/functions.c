@@ -117,21 +117,24 @@ void add_sem(int semID, int n, int value){
     sbuf.sem_flg = 0;
     sbuf.sem_op = value;
     if(semop(semID,&sbuf,1)==-1){
-        printf("Error when adding to semaphore!\n");
+        printf("Error when adding to semaphore! %d\n",n);
         perror(NULL);
         exit(EXIT_FAILURE);
     }
 }
 
 int semval_zero(int semID, int n){
-    struct sembuf sbuf;
+    /*struct sembuf sbuf;
     sbuf.sem_num = n;
     sbuf.sem_flg = IPC_NOWAIT;
     sbuf.sem_op = 0;
     if(semop(semID,&sbuf,1)<0 && errno==EAGAIN){
-        return 0;
+        return 1;
     }
-    return 1;
+    return 0;
+    */
+   if (semctl(semID,n,GETVAL)==0) return 1;
+   else return 0;
 }
 
 void sem_wait_till_zero(int semID, int n){

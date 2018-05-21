@@ -18,7 +18,6 @@
 #define BARBER 1
 #define CHAIR 2
 #define CLIENT 3
-#define MSG 4
 #define PROJ_ID 1234
 
 typedef struct Fifo{

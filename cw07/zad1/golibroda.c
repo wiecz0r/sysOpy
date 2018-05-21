@@ -16,13 +16,15 @@
 key_t key;
 int semID, shmID;
 Fifo* fifo;
-int sem_count = 6;
+int sem_count = 4;
 int seats_no = 0;
 
 void at_exit(void){
     remove_sem(semID);
     shmdt(fifo);
     shmctl(shmID,IPC_RMID,NULL);
+    printf("\nRemoved shared data and semaphores. Terminating...\n");
+    fflush(stdout);
 }
 
 void sig_handler(int signo){
@@ -50,34 +52,26 @@ int main(int args, char **argv){
 
     add_sem(semID, QUEUE, 1);
     add_sem(semID, BARBER, 1);
-    printf("GETVAL_BARBER: %d\n",semctl(semID,BARBER,GETVAL,0));
 
     while(1){
         add_sem(semID, QUEUE, -1);
         int is_empty = is_fifo_empty(fifo);
         add_sem(semID, QUEUE, 1);
         if(is_empty){
-            printf("BARBER is falling asleep.   Time:%ld\n",get_time());
-            printf("GETVAL_BARBER: %d\n",semctl(semID,BARBER,GETVAL,0));
+            printf("BARBER is falling asleep.                             Time:%ld\n",get_time());
             add_sem(semID,BARBER,-1);
-            printf("GETVAL_BARBER: %d\n",semctl(semID,BARBER,GETVAL,0));
             add_sem(semID,BARBER,-1);
-            printf("GETVAL_BARBER: %d\n",semctl(semID,BARBER,GETVAL,0));
-            printf("BARBER is waking up.   Time:%ld\n",get_time());
+            printf("BARBER is waking up.                                  Time:%ld\n",get_time());
         }
         add_sem(semID,QUEUE,-1);
         int pid = fifo_get(fifo);
         add_sem(semID,QUEUE,1);
-        printf("BARBER is welcoming client on chair (PID: %d).   Time:%ld\n",pid,get_time());
+        printf("BARBER is welcoming client on chair (PID: %d).      Time:%ld\n",pid,get_time());
         kill(pid,SIGUSR1);
-        printf("GETVAL_CHAIR: %d\n",semctl(semID,CHAIR,GETVAL,0));
         add_sem(semID,CHAIR,-1);
-        printf("GETVAL_CHAIR: %d\n",semctl(semID,CHAIR,GETVAL,0));
-        //add_sem(semID,BARBER,-1);
-        //printf("GETVAL_BARBER: %d\n",semctl(semID,BARBER,GETVAL,0));
-        printf("BARBER is cutting client (PID: %d).   Time:%ld\n",pid,get_time());
-        printf("BARBER has just finished cutting (PID: %d).   Time:%ld\n",pid,get_time());
-        kill(pid,SIGINT);
+        printf("BARBER is cutting client (PID: %d).                 Time:%ld\n",pid,get_time());
+        printf("BARBER has just finished cutting (PID: %d).         Time:%ld\n",pid,get_time());
+        kill(pid,SIGUSR2);
     }
     return 0;
 }

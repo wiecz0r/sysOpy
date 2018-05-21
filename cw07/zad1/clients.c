@@ -18,35 +18,32 @@ int clients_count=0;
 int cuts_count=0;
 Fifo * fifo;
 pid_t pid;
-
+int on_chair=0, finished=0;
 int semID;
 
 void print_msg(char *string, int pid, long gtime){
-    //add_sem(semID,MSG,-1);
-    printf("[PID: %d] %sTime:%ld\n",pid,string,gtime);
-    //add_sem(semID,MSG,1);
+    printf("[PID: \x1b[33m%d\x1b[0m] %sTime:%ld\n",pid,string,gtime);
 }
 
 void sigusr1_handler(int signo){
     add_sem(semID,CLIENT,-1);
+    on_chair=1;
     print_msg("Sitting on barber's chair.           ",pid,get_time());
-    fflush(stdout);
-    //printf("GETVAL_CHAIR: %d\n",semctl(semID,CHAIR,GETVAL,0));
     fflush(stdout);
     add_sem(semID,CHAIR,1);
 }
 
-void sigint_handler(int signo){
+void sigusr2_handler(int signo){
     cuts_count--;
-    printf("[PID: %d] Finished cut.%d more cuts remaining.  Time:%ld\n",pid,cuts_count,get_time());
+    printf("[PID: \x1b[34m%d\x1b[0m] Finished cut.%d more cuts remaining.  Time:%ld\n",pid,cuts_count,get_time());
     fflush(stdout);
     add_sem(semID,CLIENT,1);
-    //add_sem(semID,MSG,1);
     if(!cuts_count){
-        print_msg("Leaving the barber's.                ",pid,get_time());
+        print_msg("\x1b[31mLeaving the barber's.\x1b[0m                ",pid,get_time());
         fflush(stdout);
         exit(EXIT_SUCCESS);
     }
+    finished=1;
 }
 
 int main(int args, char **argv){
@@ -54,7 +51,7 @@ int main(int args, char **argv){
         printf("Podaj liczbe klientow oraz strzyzen dla klienta!\n");
         return EXIT_FAILURE;
     }
-    signal(SIGINT,sigint_handler);
+    signal(SIGUSR2,sigusr2_handler);
 
     clients_count = atoi(argv[1]);
     cuts_count = atoi(argv[2]);
@@ -65,7 +62,6 @@ int main(int args, char **argv){
 
     signal(SIGUSR1,sigusr1_handler);
     add_sem(semID,CLIENT,1);
-    add_sem(semID,MSG,1);
     sleep(1);
     printf("\n");
     for(int i=0; i<clients_count; i++){
@@ -73,30 +69,38 @@ int main(int args, char **argv){
             pid = getpid();
             print_msg("is entering the Barber Shop.         ",pid,get_time());
             while(1){
-                //add_sem(semID,MSG,-1);
                 add_sem(semID, QUEUE, -1);
                 int putted = fifo_put(fifo,getpid());
                 add_sem(semID, QUEUE, 1);
                 if(semval_zero(semID,BARBER)){
-                    print_msg("Waking up barber.                    ",pid,get_time());
+                    print_msg("\x1b[32mWaking up barber.\x1b[0m                    ",pid,get_time());
                     fflush(stdout);
                     add_sem(semID,BARBER,2);
                 }
-                else if(putted == -1){
-                    print_msg("Queue full. Going to exit.   ",pid,get_time());
-                    fflush(stdout);
-                    exit(0);
-                }
                 else {
-                    print_msg("Sitting in queue.                    ",pid,get_time());
-                    fflush(stdout);
+                    if(putted == -1){
+                        print_msg("\x1b[31mQueue full. Going to exit.\x1b[0m   ",getpid(),get_time());
+                        fflush(stdout);
+                        exit(0);
+                    }
+                    if (on_chair!=1){
+                        print_msg("Sitting in queue.                    ",pid,get_time());
+                        fflush(stdout);
+                    }
                 }
-                //add_sem(semID,MSG,-1);
-                pause();
+                while(!on_chair){
+                    //do nothing
+                }
+                on_chair=0;
+                while(!finished){
+                    //do nothing
+                }
+                finished=1;
             }
         }
     }
     while(wait(NULL)>0);
+    printf("All clients left barbers'. Terminating clients manager...\n");
     return 0;
 
 }

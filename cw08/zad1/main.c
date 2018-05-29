@@ -4,6 +4,8 @@
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
+#include <signal.h>
+#include <sys/resource.h>
 
 #define MAX(X, Y) (X > Y ? X : Y)
 #define MIN(X, Y) (X < Y ? X : Y)
@@ -49,18 +51,19 @@ int main(int argc, char ** argv){
 
     parse_picture(argv[2]);
     parse_filter(argv[3]);
+    
 
     //timeval[] indexes: 0-realtime, 1-usertime, 2-systemtime
     struct timeval start[3];
     struct timeval end[3];
-    struct rusage * ru = NULL;
+    struct rusage ru;
 
     pthread_t * threads_id = (pthread_t*) malloc(sizeof(pthread_t) * n_threads);
 
     gettimeofday(&start[0],0);
-    getrusage(RUSAGE_SELF, ru);
-    start[1]=ru->ru_utime;
-    start[2]=ru->ru_stime;
+    getrusage(RUSAGE_SELF, &ru);
+    start[1]=ru.ru_utime;
+    start[2]=ru.ru_stime;
 
     for (int i=0; i<n_threads; i++){
         int * arg = (int *) malloc(sizeof(int));
@@ -75,9 +78,9 @@ int main(int argc, char ** argv){
     free(threads_id);
 
     gettimeofday(&end[0],0);
-    getrusage(RUSAGE_SELF, ru);
-    end[1]=ru->ru_utime;
-    end[2]=ru->ru_stime;
+    getrusage(RUSAGE_SELF, &ru);
+    end[1]=ru.ru_utime;
+    end[2]=ru.ru_stime;
 
     save_picture(filtered_name);
     calculate_and_save_time(start, end);
@@ -100,9 +103,11 @@ void parse_picture(char * path){
     }
 
     fscanf(file,"P2\n");
-    fscanf(file, "%d*[ ]", &pic.width);
-    fscanf(file, "%d*[ \n]", &pic.height);
-    fscanf(file, "%d*[ \n]", &pic.range);
+    fscanf(file, "%d", &pic.width);
+    fscanf(file, "%d", &pic.height);
+    fscanf(file, "%d", &pic.range);
+    printf("%d  %d\n",pic.width, pic.height);
+    fflush(stdout);
     filtered_pic = pic;
 
     pic.pic = (int **) malloc(sizeof(int*) * pic.height);
@@ -111,8 +116,8 @@ void parse_picture(char * path){
     for(int i=0; i<pic.height; i++){
         pic.pic[i] = (int *) malloc(sizeof(int) * pic.width);
         filtered_pic.pic[i] = (int *) malloc(sizeof(int) * filtered_pic.width);
-        for(int j=0; j<pic.width; i++){
-            fscanf(file, "%d*[ \n]", &pic.pic[i][j]);
+        for(int j=0; j<pic.width; j++){
+            fscanf(file, "%d", &pic.pic[i][j]);
         }
     }
     fclose(file);
@@ -125,14 +130,15 @@ void parse_filter(char * path){
         exit(EXIT_FAILURE);
     }
 
-    fscanf(file,"%d*[ \n]",&fil.size);
+    fscanf(file,"%d",&fil.size);
+    printf("%d\n",fil.size);
 
     fil.filter = (float **) malloc(sizeof(float*) * fil.size);
-
+    
     for(int i=0; i<fil.size; i++){
         fil.filter[i] = (float *) malloc(sizeof(float) * fil.size);
-        for(int j=0; j<fil.size; i++){
-            fscanf(file, "%f[ \n]", &fil.filter[i][j]);
+        for(int j=0; j<fil.size; j++){
+            fscanf(file, "%f", &fil.filter[i][j]);
         }
     }
     fclose(file);
@@ -147,8 +153,8 @@ void *thread_action(void * args){
             for (int j=0;j<fil.size;j++){
                 for (int k=0;k<fil.size;k++){
                     int pos_x = MIN(MAX(0,x-ceil(fil.size/2)+j),pic.width-1);
-                    int pos_y = MIN(MAX(0,y-ceil(fil.size/2)+k),pic.width-1);
-                    new_val += pic.pic[pos_y][pos_x] * fil.filter[x][y];
+                    int pos_y = MIN(MAX(0,y-ceil(fil.size/2)+k),pic.height-1);
+                    new_val += pic.pic[pos_y][pos_x] * fil.filter[k][j];
                 }
             }
             filtered_pic.pic[y][x] = (int) round(new_val); 
@@ -165,7 +171,7 @@ void save_picture(char * path){
     }
     fprintf(file,"P2\n%d %d\n255\n",filtered_pic.width,filtered_pic.height);
     for (int i=0;i<pic.height;i++){
-        for (int j=0;j<pic.width;i++){
+        for (int j=0;j<pic.width;j++){
             fprintf(file,"%d ",filtered_pic.pic[i][j]);
         }
         fprintf(file,"\n");

@@ -106,8 +106,6 @@ void parse_picture(char * path){
     fscanf(file, "%d", &pic.width);
     fscanf(file, "%d", &pic.height);
     fscanf(file, "%d", &pic.range);
-    printf("%d  %d\n",pic.width, pic.height);
-    fflush(stdout);
     filtered_pic = pic;
 
     pic.pic = (int **) malloc(sizeof(int*) * pic.height);
@@ -131,8 +129,6 @@ void parse_filter(char * path){
     }
 
     fscanf(file,"%d",&fil.size);
-    printf("%d\n",fil.size);
-
     fil.filter = (float **) malloc(sizeof(float*) * fil.size);
     
     for(int i=0; i<fil.size; i++){

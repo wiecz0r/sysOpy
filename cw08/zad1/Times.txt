@@ -1,0 +1,96 @@
+Number of threads: 1
+Picture size: 640x480
+Filter size: 4x4
+-----TIME INFO-----
+Real: 31190     
+User: 22152               
+System: 0                   
+
+Number of threads: 2
+Picture size: 640x480
+Filter size: 4x4
+-----TIME INFO-----
+Real: 51455     
+User: 25573               
+System: 0                   
+
+Number of threads: 4
+Picture size: 640x480
+Filter size: 4x4
+-----TIME INFO-----
+Real: 53901     
+User: 25800               
+System: 0                   
+
+Number of threads: 8
+Picture size: 640x480
+Filter size: 4x4
+-----TIME INFO-----
+Real: 44260     
+User: 23528               
+System: 1753                
+
+Number of threads: 1
+Picture size: 640x480
+Filter size: 16x16
+-----TIME INFO-----
+Real: 448227    
+User: 321891              
+System: 3246                
+
+Number of threads: 2
+Picture size: 640x480
+Filter size: 16x16
+-----TIME INFO-----
+Real: 590456    
+User: 322366              
+System: 3178                
+
+Number of threads: 4
+Picture size: 640x480
+Filter size: 16x16
+-----TIME INFO-----
+Real: 323444    
+User: 283762              
+System: 967                 
+
+Number of threads: 8
+Picture size: 640x480
+Filter size: 16x16
+-----TIME INFO-----
+Real: 330679    
+User: 287202              
+System: 0                   
+
+Number of threads: 1
+Picture size: 640x480
+Filter size: 60x60
+-----TIME INFO-----
+Real: 5434223   
+User: 4012554             
+System: 23286               
+
+Number of threads: 2
+Picture size: 640x480
+Filter size: 60x60
+-----TIME INFO-----
+Real: 4418323   
+User: 4028697             
+System: 19820               
+
+Number of threads: 4
+Picture size: 640x480
+Filter size: 60x60
+-----TIME INFO-----
+Real: 4224707   
+User: 3855840             
+System: 0                   
+
+Number of threads: 8
+Picture size: 640x480
+Filter size: 60x60
+-----TIME INFO-----
+Real: 4181519   
+User: 3875217             
+System: 0                   
+

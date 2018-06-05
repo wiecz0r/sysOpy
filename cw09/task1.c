@@ -20,6 +20,8 @@ pthread_cond_t P_cond, K_cond;
 pthread_t *P_threads, *K_threads;
 
 void handler(int signum){
+    pthread_mutex_lock(&P_mutex);
+    pthread_mutex_lock(&K_mutex);
     printf("Received signal!\nCancelling all threads...\n");
     for(int i=0; i<P; i++){
         pthread_cancel(P_threads[i]);

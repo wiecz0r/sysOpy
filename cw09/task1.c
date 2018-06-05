@@ -62,6 +62,12 @@ int main(int argc, char **argv){
     }
     else {
         sleep(nk);
+        for (int i=0; i<P; i++){
+            pthread_cancel(P_threads[i]);
+        }
+        for (int i=0; i<K; i++){
+            pthread_cancel(K_threads[i]);
+        }
     }
     //close file and destroy all mutexes and conditions
     fclose(file);
@@ -129,15 +135,14 @@ FILE *allocate_and_initialize(){
 }
 
 void *producer(void *args){
-    //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    //pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     FILE *file = (FILE*) args;
     char line[LINE_MAX_SIZE];
     int index;
 
     while(fgets(line, LINE_MAX_SIZE, file) != NULL){
         pthread_mutex_lock(&P_mutex);
-
         if(verbose){
             printf("Producer [TID: %d] is processing file line.\n",(int) pthread_self());
         }
@@ -169,8 +174,8 @@ void *producer(void *args){
 }
 
 void *consumer(void *args){
-    //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    //pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     char *line;
     int index;
 
@@ -198,10 +203,8 @@ void *consumer(void *args){
         if(verbose){
             printf("Consumer [TID: %d] just took line from buffer (index: %d).\n",(int) pthread_self(),index);
         }
-
         pthread_cond_broadcast(&P_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);
         pthread_mutex_unlock(&K_mutex);
-        free(line);
     }
 }

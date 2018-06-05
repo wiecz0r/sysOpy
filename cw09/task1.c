@@ -149,7 +149,7 @@ void *producer(void *args){
         buffer[index] = malloc((strlen(line)+1) * sizeof(char));
         strcpy(buffer[index], line);
         if(verbose){
-            printf("Producer [TID: %ld] just copied line from \"%s\" to buffer (index: %s).\n",(long) pthread_self(),filename,index);
+            printf("Producer [TID: %ld] just copied line from \"%s\" to buffer (index: %d).\n",(long) pthread_self(),filename,index);
         }
 
         pthread_cond_broadcast(&K_cond);

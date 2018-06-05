@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <string.h>
 
 #define LINE_MAX_SIZE 256
 #define RED     "\x1b[31m"
@@ -74,14 +75,14 @@ int main(int argc, char **argv){
 
     for (int i=0; i<N; i++){
         if (buffer[i]) free(buffer[i]);
-        pthread_mutex_destroy(&buffer_sem[i]);
+        sem_destroy(&buffer_sem[i]);
     }
     free(buffer);
     free(buffer_sem);
-    pthread_mutex_destroy(&P_sem);
-    pthread_mutex_destroy(&K_sem);
-    //pthread_cond_destroy(&P_cond);
-    //pthread_cond_destroy(&K_cond);
+    sem_destroy(&P_sem);
+    sem_destroy(&K_sem);
+    sem_destroy(&P_wait);
+    sem_destroy(&K_wait);
     printf("Terminated\n");
     return 0;
 }

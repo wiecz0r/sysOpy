@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
 
 #define LINE_MAX_SIZE 256
 #define RED     "\x1b[31m"

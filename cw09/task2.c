@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 #define LINE_MAX_SIZE 256
 #define RED     "\x1b[31m"
@@ -18,8 +19,8 @@ int P, K, N, L, nk, verbose;
 char search_type, filename[FILENAME_MAX];
 char **buffer;
 int P_index=0, K_index=0, P_term=0;
-pthread_mutex_t P_mutex, K_mutex, *buffer_mutex;
-pthread_cond_t P_cond, K_cond;
+sem_t P_sem, K_sem, *buffer_sem, P_wait, K_wait;
+//pthread_cond_t P_cond, K_cond;
 pthread_t *P_threads, *K_threads;
 
 void handler(int);
@@ -63,7 +64,7 @@ int main(int argc, char **argv){
         pthread_join(P_threads[i], NULL);
     }
     P_term = 1;
-    pthread_cond_broadcast(&K_cond);
+    sem_post(&K_wait);
     for (int i=0; i<K; i++){
         pthread_join(K_threads[i], NULL);
     }
@@ -73,14 +74,14 @@ int main(int argc, char **argv){
 
     for (int i=0; i<N; i++){
         if (buffer[i]) free(buffer[i]);
-        pthread_mutex_destroy(&buffer_mutex[i]);
+        pthread_mutex_destroy(&buffer_sem[i]);
     }
     free(buffer);
-    free(buffer_mutex);
-    pthread_mutex_destroy(&P_mutex);
-    pthread_mutex_destroy(&K_mutex);
-    pthread_cond_destroy(&P_cond);
-    pthread_cond_destroy(&K_cond);
+    free(buffer_sem);
+    pthread_mutex_destroy(&P_sem);
+    pthread_mutex_destroy(&K_sem);
+    //pthread_cond_destroy(&P_cond);
+    //pthread_cond_destroy(&K_cond);
     printf("Terminated\n");
     return 0;
 }
@@ -104,19 +105,21 @@ FILE *allocate_and_initialize(){
         exit(EXIT_FAILURE);
     }
     buffer = malloc(N * sizeof(char *));
-    buffer_mutex = malloc(N * sizeof(pthread_mutex_t));
+    buffer_sem = malloc(N * sizeof(sem_t));
 
     P_threads = malloc(P * sizeof(pthread_t));
     K_threads = malloc(K * sizeof(pthread_t));
 
     for(int i=0; i<N; i++){
-        pthread_mutex_init(&buffer_mutex[i], NULL);
+        sem_init(&buffer_sem[i], 0, 1);
     }
-    pthread_mutex_init(&P_mutex, NULL);
-    pthread_mutex_init(&K_mutex, NULL);
+    sem_init(&P_sem, 0, 1);
+    sem_init(&K_sem, 0, 1);
+    sem_init(&K_wait, 0, 0);
+    sem_init(&P_wait, 0, N);
 
-    pthread_cond_init(&P_cond, NULL);
-    pthread_cond_init(&K_cond, NULL);
+    //pthread_cond_init(&P_cond, NULL);
+    //pthread_cond_init(&K_cond, NULL);
 
     return file;
 }
@@ -129,30 +132,33 @@ void *producer(void *args){
     int index;
 
     while(fgets(line, LINE_MAX_SIZE, file) != NULL){
-        pthread_mutex_lock(&P_mutex);
+        sem_wait(&P_sem);
         if(verbose){
             printf("Producer [TID: %ld] is processing file line.\n",(long) pthread_self());
         }
 
-        while(buffer[P_index] != NULL){
-            pthread_cond_wait(&P_cond, &P_mutex);
-        }
+        /*while(buffer[P_index] != NULL){
+            pthread_cond_wait(&P_cond, &P_sem);
+        }*/
+        sem_wait(&P_wait);
+
         if(verbose){
             printf("Producer [TID: %ld] is taking last used buffer index.\n",(long) pthread_self());
         }
         index=P_index;
         P_index = (P_index + 1) % N;
 
-        pthread_mutex_lock(&buffer_mutex[index]);
-        pthread_mutex_unlock(&P_mutex);
+        sem_wait(&buffer_sem[index]);
+        sem_post(&P_sem);
         buffer[index] = malloc((strlen(line)+1) * sizeof(char));
         strcpy(buffer[index], line);
         if(verbose){
             printf("Producer [TID: %ld] just copied line from \"%s\".\n",(long) pthread_self(),filename);
         }
 
-        pthread_cond_broadcast(&K_cond);
-        pthread_mutex_unlock(&buffer_mutex[index]);
+        //pthread_cond_broadcast(&K_cond);
+        sem_post(&buffer_sem[index]);
+        sem_post(&K_wait);
         if(verbose){
             printf("Producer [TID: %ld] just finished his job!\n",(long) pthread_self());
         }
@@ -167,25 +173,28 @@ void *consumer(void *args){
     int index;
 
     while(1){
-        pthread_mutex_lock(&K_mutex);
-        while(buffer[K_index]==NULL){
-            if(P_term){
-                pthread_mutex_unlock(&K_mutex);
-                if(verbose){
-                    printf(MAGENTA"Consumer [TID: %ld] is terminating.\n"RESET,(long) pthread_self());
-                }
-                return NULL;
+        sem_wait(&K_sem);
+        //while(buffer[K_index]==NULL){
+        sem_wait(&K_wait);
+        if(P_term){
+            sem_post(&K_wait);
+            sem_post(&K_sem);
+            if(verbose){
+                printf(MAGENTA"Consumer [TID: %ld] is terminating.\n"RESET,(long) pthread_self());
             }
-            pthread_cond_wait(&K_cond,&K_mutex);
+            return NULL;
         }
+            //pthread_cond_wait(&K_cond,&K_sem);
+        //}
         if(verbose){
             printf("Consumer [TID: %ld] is taking last used buffer index.\n",(long) pthread_self());
         }
         index=K_index;
         K_index = (K_index + 1) % N;
 
-        pthread_mutex_lock(&buffer_mutex[index]);
-        pthread_mutex_unlock(&K_mutex);
+        sem_wait(&buffer_sem[index]);
+        
+        sem_post(&K_sem);
         char *line = buffer[index];
         buffer[index]=NULL;
         
@@ -195,15 +204,15 @@ void *consumer(void *args){
 
         length_checker(line);
 
-        pthread_cond_broadcast(&P_cond);
-        pthread_mutex_unlock(&buffer_mutex[index]);
+        sem_post(&P_wait);//pthread_cond_broadcast(&P_cond);
+        sem_post(&buffer_sem[index]);
         free(line);
     }
 }
 
 void handler(int signum){
-    pthread_mutex_lock(&P_mutex);
-    pthread_mutex_lock(&K_mutex);
+    sem_wait(&P_sem);
+    sem_wait(&K_sem);
     printf("Received %s !\nCancelling all threads...\n",signum == SIGINT ? "SIGINT" : "SIGALRM");
     for(int i=0; i<P; i++){
         pthread_cancel(P_threads[i]);

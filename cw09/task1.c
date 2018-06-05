@@ -137,14 +137,14 @@ void *producer(void *args){
     while(fgets(line, LINE_MAX_SIZE, file) != NULL){
         pthread_mutex_lock(&P_mutex);
         if(verbose){
-            printf("Producer [TID: %d] is processing file line.\n",(int) pthread_self());
+            printf("Producer [TID: %ld] is processing file line.\n",(long) pthread_self());
         }
 
         while(buffer[P_index] != NULL){
             pthread_cond_wait(&P_cond, &P_mutex);
         }
         if(verbose){
-            printf("Producer [TID: %d] is taking last used buffer index.\n",(int) pthread_self());
+            printf("Producer [TID: %ld] is taking last used buffer index.\n",(long) pthread_self());
         }
         index=P_index;
         P_index = (P_index + 1) % N;
@@ -153,14 +153,14 @@ void *producer(void *args){
         buffer[index] = malloc((strlen(line)+1) * sizeof(char));
         strcpy(buffer[index], line);
         if(verbose){
-            printf("Producer [TID: %d] just copied line from \"%s\".\n",(int) pthread_self(),filename);
+            printf("Producer [TID: %ld] just copied line from \"%s\".\n",(long) pthread_self(),filename);
         }
 
         pthread_cond_broadcast(&K_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);
         pthread_mutex_unlock(&P_mutex);
         if(verbose){
-            printf("Producer [TID: %d] just finished his job!\n",(int) pthread_self());
+            printf("Producer [TID: %ld] just finished his job!\n",(long) pthread_self());
         }
         usleep(20);
     }
@@ -178,14 +178,14 @@ void *consumer(void *args){
             if(P_term){
                 pthread_mutex_unlock(&K_mutex);
                 if(verbose){
-                    printf("Consumer [TID: %d] is terminating.\n",(int) pthread_self());
+                    printf("Consumer [TID: %ld] is terminating.\n",(long) pthread_self());
                 }
                 return NULL;
             }
             pthread_cond_wait(&K_cond,&K_mutex);
         }
         if(verbose){
-            printf("Consumer [TID: %d] is taking last used buffer index.\n",(int) pthread_self());
+            printf("Consumer [TID: %ld] is taking last used buffer index.\n",(long) pthread_self());
         }
         index=K_index;
         K_index = (K_index + 1) % N;
@@ -196,7 +196,7 @@ void *consumer(void *args){
         buffer[index]=NULL;
         
         if(verbose){
-            printf("Consumer [TID: %d] just took line from buffer (index: %d).\n",(int) pthread_self(),index);
+            printf("Consumer [TID: %ld] just took line from buffer (index: %d).\n",(long) pthread_self(),index);
         }
         pthread_cond_broadcast(&P_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);

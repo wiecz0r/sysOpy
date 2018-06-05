@@ -6,6 +6,7 @@
 #include <semaphore.h>
 #include <string.h>
 
+#define _BSD_SOURCE
 #define LINE_MAX_SIZE 256
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32m"
@@ -21,8 +22,8 @@ char search_type, filename[FILENAME_MAX];
 char **buffer;
 int P_index=0, K_index=0, P_term=0;
 sem_t P_sem, K_sem, *buffer_sem, P_wait, K_wait;
-//pthread_cond_t P_cond, K_cond;
 pthread_t *P_threads, *K_threads;
+int L_count=0;
 
 void handler(int);
 void read_config(char*);
@@ -150,7 +151,6 @@ void *producer(void *args){
         P_index = (P_index + 1) % N;
 
         sem_wait(&buffer_sem[index]);
-        sem_post(&P_sem);
         buffer[index] = malloc((strlen(line)+1) * sizeof(char));
         strcpy(buffer[index], line);
         if(verbose){
@@ -159,12 +159,15 @@ void *producer(void *args){
 
         //pthread_cond_broadcast(&K_cond);
         sem_post(&buffer_sem[index]);
+        sem_post(&P_sem);
         sem_post(&K_wait);
         if(verbose){
             printf("Producer [TID: %ld] just finished his job!\n",(long) pthread_self());
         }
     }
-    printf(MAGENTA"Producer [TID: %ld] is terminating\n"RESET,(long) pthread_self());
+    if(verbose){
+        printf(MAGENTA"Producer [TID: %ld] is terminating\n"RESET,(long) pthread_self());
+    }
     return NULL;
 }
 
@@ -176,7 +179,7 @@ void *consumer(void *args){
     while(1){
         sem_wait(&K_sem);
         //while(buffer[K_index]==NULL){
-        sem_wait(&K_wait);
+        
         if(P_term){
             sem_post(&K_wait);
             sem_post(&K_sem);
@@ -185,6 +188,7 @@ void *consumer(void *args){
             }
             return NULL;
         }
+        sem_wait(&K_wait);
             //pthread_cond_wait(&K_cond,&K_sem);
         //}
         if(verbose){
@@ -195,7 +199,7 @@ void *consumer(void *args){
 
         sem_wait(&buffer_sem[index]);
         
-        sem_post(&K_sem);
+        
         char *line = buffer[index];
         buffer[index]=NULL;
         
@@ -204,9 +208,10 @@ void *consumer(void *args){
         }
 
         length_checker(line);
-
-        sem_post(&P_wait);//pthread_cond_broadcast(&P_cond);
         sem_post(&buffer_sem[index]);
+        sem_post(&K_sem);
+        sem_post(&P_wait);//pthread_cond_broadcast(&P_cond);
+        
         free(line);
     }
 }
@@ -248,6 +253,7 @@ void length_checker(char *line){
             exit(EXIT_FAILURE);
     }
     if (ok_len) {
+        L_count++;
         printf(GREEN"Consumer "YELLOW"[TID: %ld]"GREEN" just found line which length is %c %d.\n"RESET,(long) pthread_self(),search_type,L);
         fflush(stdout);
     }

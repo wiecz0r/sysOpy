@@ -22,6 +22,7 @@ int P_index=0, K_index=0, P_term=0;
 pthread_mutex_t P_mutex, K_mutex, *buffer_mutex;
 pthread_cond_t P_cond, K_cond;
 pthread_t *P_threads, *K_threads;
+int L_count=0;
 
 void handler(int);
 void read_config(char*);
@@ -145,7 +146,6 @@ void *producer(void *args){
         P_index = (P_index + 1) % N;
 
         pthread_mutex_lock(&buffer_mutex[index]);
-        pthread_mutex_unlock(&P_mutex);
         buffer[index] = malloc((strlen(line)+1) * sizeof(char));
         strcpy(buffer[index], line);
         if(verbose){
@@ -154,11 +154,14 @@ void *producer(void *args){
 
         pthread_cond_broadcast(&K_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);
+        pthread_mutex_unlock(&P_mutex);
         if(verbose){
             printf("Producer [TID: %ld] just finished his job!\n",(long) pthread_self());
         }
     }
-    printf(MAGENTA"Producer [TID: %ld] is terminating\n"RESET,(long) pthread_self());
+    if(verbose){
+        printf(MAGENTA"Producer [TID: %ld] is terminating\n"RESET,(long) pthread_self());
+    }
     return NULL;
 }
 
@@ -186,7 +189,6 @@ void *consumer(void *args){
         K_index = (K_index + 1) % N;
 
         pthread_mutex_lock(&buffer_mutex[index]);
-        pthread_mutex_unlock(&K_mutex);
         char *line = buffer[index];
         buffer[index]=NULL;
         
@@ -198,6 +200,7 @@ void *consumer(void *args){
 
         pthread_cond_broadcast(&P_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);
+        pthread_mutex_unlock(&K_mutex);
         free(line);
     }
 }
@@ -239,6 +242,7 @@ void length_checker(char *line){
             exit(EXIT_FAILURE);
     }
     if (ok_len) {
+        L_count++;
         printf(GREEN"Consumer "YELLOW"[TID: %ld]"GREEN" just found line which length is %c %d.\n"RESET,(long) pthread_self(),search_type,L);
         fflush(stdout);
     }

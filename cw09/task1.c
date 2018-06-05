@@ -22,7 +22,7 @@ pthread_t *P_threads, *K_threads;
 void handler(int signum){
     pthread_mutex_lock(&P_mutex);
     pthread_mutex_lock(&K_mutex);
-    printf("Received signal!\nCancelling all threads...\n");
+    printf("Received %s !\nCancelling all threads...\n",signum == SIGINT ? "SIGINT" : "SIGALRM");
     for(int i=0; i<P; i++){
         pthread_cancel(P_threads[i]);
     }
@@ -45,6 +45,7 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
     read_config(argv[1]);
+    sleep(2);
 
     if(nk > 0){
         signal(SIGALRM,handler);
@@ -57,7 +58,6 @@ int main(int argc, char **argv){
     FILE *file = allocate_and_initialize();
 
     if (nk > 0) alarm(nk);
-    usleep(5000);
     for (int i=0; i<P; i++){
         pthread_create(&P_threads[i], NULL, producer, file);
     }

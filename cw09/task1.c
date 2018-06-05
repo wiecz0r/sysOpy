@@ -125,8 +125,8 @@ FILE *allocate_and_initialize(){
 }
 
 void *producer(void *args){
-    //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    //pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     FILE *file = (FILE*) args;
     char line[LINE_MAX_SIZE];
     int index;
@@ -167,7 +167,7 @@ void *producer(void *args){
 
 void *consumer(void *args){
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    //pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     int index;
 
     while(1){
@@ -199,6 +199,6 @@ void *consumer(void *args){
         pthread_cond_broadcast(&P_cond);
         pthread_mutex_unlock(&buffer_mutex[index]);
         usleep(20);
-        //free(line);
+        free(line);
     }
 }
